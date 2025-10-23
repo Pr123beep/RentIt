@@ -43,10 +43,17 @@ const Sort = () => {
   },[])
 
   return (
-    <div className=" drop-shadow-lg">
+    <div className="drop-shadow-lg bg-white rounded-xl p-4 shadow-md border border-gray-100">
       <form onSubmit={handleSubmit}>
-        <div className="flex items-center justify-center gap-1 md:gap-3 md:justify-start mx-auto md:mx-[80px] lg:mx-0">
-  
+        <div className="flex items-center justify-between gap-3 md:gap-4 mx-auto">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+            </svg>
+            <span className="font-semibold text-gray-700 hidden md:block">Sort By:</span>
+          </div>
+          
+          <div className="flex items-center gap-2 md:gap-3 flex-1 justify-end">
             <Controller
               control={control}
               name="price"
@@ -56,21 +63,30 @@ const Sort = () => {
                   id="price"
                   select
                   label="Price"
-                  // error={Boolean(field.value == "")}
-                  sx={{ m: 1, width: 150 ,borderRadius:"400px"}}
-                  
+                  sx={{ 
+                    m: 0.5, 
+                    minWidth: 140,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '0.5rem',
+                      '&:hover fieldset': {
+                        borderColor: '#10b981',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#10b981',
+                      },
+                    },
+                  }}
                   onChange={(event) => {
-                    field.onChange(event); // Trigger react-hook-form's onChange function
-                    handleInputChange(event.target.value); // Custom function to handle select change
+                    field.onChange(event);
+                    handleInputChange(event.target.value);
                   }}
                 >
-                  <MenuItem className="bg-gray-100">None</MenuItem>
-                  <MenuItem value={"lowtohigh"}>Low to High</MenuItem>
-
-                  <MenuItem value={"hightolow"}>High to Low</MenuItem>
+                  <MenuItem value="">None</MenuItem>
+                  <MenuItem value={"lowtohigh"}>💰 Low to High</MenuItem>
+                  <MenuItem value={"hightolow"}>💎 High to Low</MenuItem>
                 </TextField>
               )}
-            ></Controller>
+            />
 
             <Controller
               control={control}
@@ -81,21 +97,31 @@ const Sort = () => {
                   id="year"
                   select
                   label="Year"
-                  // error={Boolean(field.value == "")}
-                  sx={{ m: 1, width: 150 }}
+                  sx={{ 
+                    m: 0.5, 
+                    minWidth: 140,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '0.5rem',
+                      '&:hover fieldset': {
+                        borderColor: '#10b981',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#10b981',
+                      },
+                    },
+                  }}
                   onChange={(event) => {
-                    field.onChange(event); // Trigger react-hook-form's onChange function
-                    handleInputChange(event.target.value); // Custom function to handle select change
+                    field.onChange(event);
+                    handleInputChange(event.target.value);
                   }}
                 >
-                  <MenuItem className="bg-gray-100" >None</MenuItem>
-                  <MenuItem value={"yearAscending"}>low to high</MenuItem>
-
-                  <MenuItem value={"yearDecending"}>high to low</MenuItem>
+                  <MenuItem value="">None</MenuItem>
+                  <MenuItem value={"yearAscending"}>📅 Oldest First</MenuItem>
+                  <MenuItem value={"yearDecending"}>🆕 Newest First</MenuItem>
                 </TextField>
               )}
-            ></Controller>
-    
+            />
+          </div>
         </div>
       </form>
     </div>

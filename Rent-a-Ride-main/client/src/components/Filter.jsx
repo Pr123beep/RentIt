@@ -82,19 +82,22 @@ const Filter = () => {
 
   
   return (
-    <div className="bg-white sticky top-5 scroll-m-9">
+    <div className="bg-white sticky top-5 scroll-m-9 rounded-xl shadow-lg border border-gray-100">
       <div className="sticky top-0 left-0 right-0  ">
-        <div className="filterComponent flex h-full max-w-[320px] lg:max-w-[350px]  flex-col  bg-white  shadow-xl mx-auto">
-          <div className="flex items-center justify-between px-4 py-2">
-            <h2 className="text-lg font-medium text-gray-900">Filters</h2>
+        <div className="filterComponent flex h-full max-w-[320px] lg:max-w-[350px]  flex-col  bg-white  shadow-xl mx-auto rounded-xl">
+          <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-t-xl">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Filters
+            </h2>
             <button
               type="button"
-              className="-mr-2  flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
+              className="-mr-2 flex h-10 w-10 items-center justify-center rounded-full bg-white hover:bg-gray-100 p-2 text-gray-600 shadow-md transition-all duration-200 transform hover:scale-110"
               onClick={()=> setFilterOpen(!filterOpen) }
             >
-             
               <div className={`plusicon ${filterOpen ? 'iconClose' : 'plusiconOpen'}`}><GoPlus className="plusicon"/></div>
-            
             </button>
           </div>
 
@@ -208,13 +211,16 @@ const Filter = () => {
                     </div>
                   </div>
 
-                  <div className="mt-7 pt-7 border-t border-t-gray-300">
+                  <div className="mt-7 pt-7 border-t border-t-gray-200">
                     <button
                       type="submit"
-                      className="px-6 py-2 bg-black text-white rounded-md"
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2"
                       onClick={handleClick}
                     >
-                      Apply
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Apply Filters
                     </button>
                   </div>
                 </form>

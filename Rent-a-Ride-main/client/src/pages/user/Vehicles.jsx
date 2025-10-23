@@ -5,12 +5,10 @@ import {
   setVehicleDetail,
   showVehicles,
 } from "../../redux/user/listAllVehicleSlice";
-import { FaCarSide } from "react-icons/fa";
-import { BsFillFuelPumpFill } from "react-icons/bs";
-import { MdAirlineSeatReclineNormal } from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Filter from "../../components/Filter";
 import Sort from "../../components/Sort";
+import VehicleCard from "../../components/VehicleCard";
 import { signOut } from "../../redux/user/userSlice";
 import Footers from "../../components/Footer";
 import SkeletonLoader from "../../components/ui/SkeletonLoader";
@@ -81,210 +79,65 @@ const Vehicles = () => {
     fetchData();
   }, [dispatch, data]);
 
+  // Determine which vehicles to display
+  const vehiclesToDisplay = filterdData && filterdData.length > 0 ? filterdData : userAllVehicles || [];
+
   return (
     <>
-   
-    <div className=" lg:grid lg:grid-cols-12 gap-x-10 lg:mx-28 justify-between">
-      <div className=" mt-10 col-span-3   lg:relative box-shadow-xl lg:drop-shadow-xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50 py-8">
+      <div className="lg:grid lg:grid-cols-12 gap-x-8 max-w-[1600px] mx-auto px-4 lg:px-8">
+        {/* Filter Sidebar */}
+        <div className="mt-2 col-span-3 lg:relative">
         <Filter />
       </div>
+
+        {/* Main Content */}
       <div className="col-span-9">
-        <div className="mt-10  bg-blend-overlay  backdrop-blur-xl opacity-1 box-shadow-xl  top-5 z-40 drop-shadow-lg ">
+          {/* Sort Component */}
+          <div className="mt-2 sticky top-20 z-40 mb-8">
           <Sort />
         </div>
        
-        
+          {/* Vehicles Count */}
+          {!isLoading && vehiclesToDisplay.length > 0 && (
+            <div className="mb-6">
+              <p className="text-lg font-semibold text-gray-700">
+                Showing <span className="text-green-600">{vehiclesToDisplay.filter(v => v.isDeleted === "false" && v.isAdminApproved).length}</span> vehicles
+                            </p>
+                          </div>
+          )}
 
-          {isLoading ? <SkeletonLoader/> : 
-
-        <div className=" flex  sm:flex-row  w-full  lg:grid lg:max-w-[1000px]  lg:grid-cols-3 justify-center items-center gap-5 flex-wrap mt-5">
-          {
-           (filterdData && filterdData.length > 0
-            ? filterdData.map(
-                (cur, idx) =>
-                  cur.isDeleted === "false" &&
-                  cur.isAdminApproved && (
-                    <div
-                      className="bg-white box-shadow rounded-lg  drop-shadow "
-                      key={idx}
-                    >
-                      <div className="mx-auto max-w-[320px] px-4 py-2 sm:px-6 sm:py-0 lg:max-w-7xl lg:px-8">
-                        <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden object-contain rounded-md bg-white lg:aspect-none group-hover:opacity-75 lg:h-80 mb-3">
-                          <img
-                            src={`${cur.image[0]}`}
-                            alt={`cur.name`}
-                            className=" w-full object-contain object-center lg:h-full lg:w-full"
-                          />
+          {/* Loading State */}
+          {isLoading ? (
+            <SkeletonLoader />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
+              {vehiclesToDisplay.map((vehicle, idx) =>
+                vehicle.isDeleted === "false" && vehicle.isAdminApproved ? (
+                  <VehicleCard
+                    key={vehicle._id || idx}
+                    vehicle={vehicle}
+                    idx={idx}
+                    onVehicleDetail={onVehicleDetail}
+                    dispatch={dispatch}
+                    navigate={navigate}
+                  />
+                ) : null
+              )}
                         </div>
-                        <div className="flex justify-between items-start">
-                          <h2 className="text-[14px] capitalize font-semibold tracking-tight text-gray-900">
-                            <span></span>
-                            {cur.name}
-                          </h2>
+          )}
 
-                          <div className="text-[14px]  flex flex-col items-end">
-                            <p className="font-semibold">{cur.price}</p>
-                            <div className="text-[6px] relative bottom-[3px]">
-                              Per Day
+          {/* No Vehicles Message */}
+          {!isLoading && vehiclesToDisplay.filter(v => v.isDeleted === "false" && v.isAdminApproved).length === 0 && (
+            <div className="text-center py-20">
+              <svg className="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">No vehicles found</h3>
+              <p className="text-gray-600">Try adjusting your filters or check back later for new listings.</p>
                             </div>
-                          </div>
-                        </div>
-
-                        <div className="my-2 font-mono">
-                          <div className="flex justify-between items-center mb-5 mt-5">
-                            <h3 className="text-[12px] flex justify-between items-center gap-1 ">
-                              <span>
-                                <FaCarSide />
-                              </span>
-                              {cur.company}
-                            </h3>
-                            <p className=" text-end text-[12px] flex justify-between items-center gap-1">
-                              <span>
-                                <MdAirlineSeatReclineNormal />
-                              </span>
-                              {cur.seats}
-                            </p>
-                          </div>
-                          <div className="flex justify-between items-center text-[12px] mb-5 ">
-                            <p className="flex items-center justify-center gap-1">
-                              <FaCarSide />
-                              {cur.car_type}
-                            </p>
-                            <p className="flex justify-between items-center gap-1">
-                              <span>
-                                <BsFillFuelPumpFill />
-                              </span>
-                              {cur.fuel_type}
-                            </p>
-                          </div>
-
-                          <hr />
-
-                          <div className="flex justify-center items-center gap-x-5  my-3">
-                            <Link to={"/vehicleDetails"}>
-                              <button
-                                className="bg-green-500 px-4 py-2 w-[100px] rounded-sm"
-                                onClick={() =>
-                                  onVehicleDetail(cur._id, dispatch, navigate)
-                                }
-                              >
-                                <div className="text-[12px] ">Book Ride</div>
-                              </button>
-                            </Link>
-
-                            <Link to={"/vehicleDetails"}>
-                              <button
-                                className="bg-black px-4 py-2 w-[100px] rounded-sm"
-                                onClick={() =>
-                                  onVehicleDetail(cur._id, dispatch, navigate)
-                                }
-                              >
-                                <div className="text-[12px] text-white">
-                                  Details
-                                </div>
-                              </button>
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-              )
-            : userAllVehicles &&
-              userAllVehicles.map(
-                (cur, idx) =>
-                  cur.isDeleted === "false" &&
-                  cur.isAdminApproved && (
-                    <div
-                      className="bg-white box-shadow rounded-lg  drop-shadow "
-                      key={idx}
-                    >
-                      <div className="mx-auto max-w-[320px] px-4 py-2 sm:px-6 sm:py-0 lg:max-w-7xl lg:px-8">
-                        <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden object-contain rounded-md bg-white lg:aspect-none group-hover:opacity-75 lg:h-80 mb-3">
-                          <img
-                            src={`${cur.image[0]}`}
-                            alt={`cur.name`}
-                            className=" w-full object-contain object-center lg:h-full lg:w-full"
-                          />
-                        </div>
-                        <div className="flex justify-between items-start">
-                          <h2 className="text-[14px] capitalize font-semibold tracking-tight text-gray-900">
-                            <span></span>
-                            {cur.name}
-                          </h2>
-
-                          <div className="text-[14px]  flex flex-col items-end">
-                            <p className="font-semibold">{cur.price}</p>
-                            <div className="text-[6px] relative bottom-[3px]">
-                              Per Day
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="my-2 font-mono">
-                          <div className="flex justify-between items-center mb-5 mt-5">
-                            <h3 className="text-[12px] flex justify-between items-center gap-1 ">
-                              <span>
-                                <FaCarSide />
-                              </span>
-                              {cur.company}
-                            </h3>
-                            <p className=" text-end text-[12px] flex justify-between items-center gap-1">
-                              <span>
-                                <MdAirlineSeatReclineNormal />
-                              </span>
-                              {cur.seats}
-                            </p>
-                          </div>
-                          <div className="flex justify-between items-center text-[12px] mb-5 ">
-                            <p className="flex items-center justify-center gap-1">
-                              <FaCarSide />
-                              {cur.car_type}
-                            </p>
-                            <p className="flex justify-between items-center gap-1">
-                              <span>
-                                <BsFillFuelPumpFill />
-                              </span>
-                              {cur.fuel_type}
-                            </p>
-                          </div>
-
-                          <hr />
-
-                          <div className="flex justify-center items-center gap-x-5  my-3">
-                            <Link to={"/vehicleDetails"}>
-                              <button
-                                className="bg-green-500 px-4 py-2 w-[100px] rounded-sm"
-                                onClick={() =>
-                                  onVehicleDetail(cur._id, dispatch)
-                                }
-                              >
-                                <div className="text-[12px] ">Book Ride</div>
-                              </button>
-                            </Link>
-
-                            <Link to={"/vehicleDetails"}>
-                              <button
-                                className="bg-black px-4 py-2 w-[100px] rounded-sm"
-                                onClick={() =>
-                                  onVehicleDetail(cur._id, dispatch)
-                                }
-                              >
-                                <div className="text-[12px] text-white">
-                                  Details
-                                </div>
-                              </button>
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-              ))
-            }
+          )}
               </div>
-              }
-              
       </div>
     </div>
     <Footers/>
