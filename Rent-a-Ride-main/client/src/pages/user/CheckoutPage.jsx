@@ -104,6 +104,25 @@ const CheckoutPage = () => {
     }
   }, [pickupDate, dropoffDate, pickup_location, dropoff_location, singleVehicleDetail, navigate]);
 
+  // Show warning if booking data is incomplete
+  if (!pickupDate?.humanReadable || !dropoffDate?.humanReadable || !pickup_location || !dropoff_location) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md mx-4 text-center">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Missing Booking Details</h2>
+          <p className="text-gray-600 mb-6">Please select your trip dates and locations before proceeding to checkout.</p>
+          <button
+            onClick={() => navigate("/vehicles")}
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+          >
+            Go Back to Vehicles
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const { email, phoneNumber, adress } = currentUser;
   const { price } = singleVehicleDetail;
 

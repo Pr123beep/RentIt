@@ -4,7 +4,24 @@ import { MdAirlineSeatReclineNormal } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { TbManualGearbox, TbAutomaticGearbox } from "react-icons/tb";
 
-const VehicleCard = ({ vehicle, idx, onVehicleDetail, dispatch, navigate }) => {
+const VehicleCard = ({ vehicle, idx, onVehicleDetail, dispatch, navigate, bookingData }) => {
+  // Check if booking data is complete
+  const hasBookingData = bookingData && 
+    bookingData.pickupDate?.humanReadable && 
+    bookingData.dropoffDate?.humanReadable && 
+    bookingData.pickup_location && 
+    bookingData.dropoff_location;
+
+  const handleBookNow = (e) => {
+    if (!hasBookingData) {
+      e.preventDefault();
+      alert("Please select your trip dates and locations first! Use the 'Select Dates & Locations' button above.");
+      return;
+    }
+    // If booking data is complete, proceed with booking
+    onVehicleDetail(vehicle._id, dispatch, navigate);
+  };
+
   return (
     <div
       className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 ease-in-out animate-fade-in border border-gray-200 group"
@@ -82,12 +99,17 @@ const VehicleCard = ({ vehicle, idx, onVehicleDetail, dispatch, navigate }) => {
 
         {/* Action Buttons - Smaller & Cleaner */}
         <div className="flex gap-2">
-          <Link to={"/vehicleDetails"} className="flex-1">
+          <Link to={hasBookingData ? "/vehicleDetails" : "#"} className="flex-1">
             <button
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-2.5 rounded-lg font-semibold text-sm transform hover:scale-[1.02] transition-all duration-200 shadow hover:shadow-lg"
-              onClick={() => onVehicleDetail(vehicle._id, dispatch, navigate)}
+              className={`w-full px-3 py-2.5 rounded-lg font-semibold text-sm transform hover:scale-[1.02] transition-all duration-200 shadow hover:shadow-lg ${
+                hasBookingData 
+                  ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white" 
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+              onClick={handleBookNow}
+              disabled={!hasBookingData}
             >
-              Book Now
+              {hasBookingData ? "Book Now" : "Select Dates First"}
             </button>
           </Link>
 

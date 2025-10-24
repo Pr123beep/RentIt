@@ -51,7 +51,7 @@ export const onVehicleDetail = async (id, dispatch, navigate) => {
 const Vehicles = () => {
   const { userAllVehicles } = useSelector((state) => state.userListVehicles);
   const { data, filterdData } = useSelector((state) => state.sortfilterSlice);
-  const { pickupDate, dropoffDate, pickup_location, dropoff_location } = useSelector((state) => state.bookingDataSlice);
+  const bookingData = useSelector((state) => state.bookingDataSlice);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading , setIsLoading] = useState(true)
@@ -155,16 +155,16 @@ const Vehicles = () => {
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Select Your Trip Dates & Locations</h3>
                 <div className="flex flex-wrap gap-2 text-sm text-gray-600">
-                  {pickupDate?.humanReadable && dropoffDate?.humanReadable ? (
+                  {bookingData?.pickupDate?.humanReadable && bookingData?.dropoffDate?.humanReadable ? (
                     <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                      📅 {pickupDate.humanReadable} → {dropoffDate.humanReadable}
+                      📅 {bookingData.pickupDate.humanReadable} → {bookingData.dropoffDate.humanReadable}
                     </span>
                   ) : (
                     <span className="text-gray-500">No dates selected</span>
                   )}
-                  {pickup_location && dropoff_location && (
+                  {bookingData?.pickup_location && bookingData?.dropoff_location && (
                     <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                      📍 {pickup_location} → {dropoff_location}
+                      📍 {bookingData.pickup_location} → {bookingData.dropoff_location}
                     </span>
                   )}
                 </div>
@@ -271,6 +271,7 @@ const Vehicles = () => {
                     onVehicleDetail={onVehicleDetail}
                     dispatch={dispatch}
                     navigate={navigate}
+                    bookingData={bookingData}
                   />
                 ) : null
               )}
