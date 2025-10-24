@@ -16,29 +16,33 @@ function Profile() {
   const dispatch = useDispatch();
 
   return (
-    <div>
-      <div className="text-red-500">{isError ? isError.message : " "}</div>
-      <div className="fixed top-4 right-5 md:right-10 z-10">
-        <TooltipComponent content={"back"} position="BottomCenter">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50">
+      {isError && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-red-100 border border-red-400 text-red-700 px-6 py-3 rounded-lg shadow-lg">
+          {isError.message}
+        </div>
+      )}
+      
+      <div className="fixed top-4 right-5 md:right-10 z-50">
+        <TooltipComponent content={"Back to Home"} position="BottomCenter">
           <Link to={"/"}>
-            <IoArrowBackCircleSharp
-              style={{ fontSize: "40", hover: "fill-red-700" }}
-              className="hover:fill-blue-500"
-            />
+            <div className="bg-white hover:bg-green-50 rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 border border-gray-200">
+              <IoArrowBackCircleSharp
+                className="text-green-600 text-3xl"
+              />
+            </div>
           </Link>
         </TooltipComponent>
       </div>
 
       <div>
-        <div className="flex  relative dark:bg-main-dark-bg">
-         
-
+        <div className="flex relative">
           {activeMenu ? (
-            <div className="w-72 bg-white  fixed sidebar dark:bg-secondary-dark-bg">
+            <div className="w-72 bg-white fixed sidebar shadow-xl border-r border-gray-200 z-40">
               <UserProfileSidebar />
             </div>
           ) : (
-            <div className="w-0 dark:bg-secondary-dark-bg">
+            <div className="w-0">
               <UserProfileSidebar />
             </div>
           )}
@@ -46,29 +50,27 @@ function Profile() {
           {/* hamburger icon */}
           {!activeMenu && (
             <TooltipComponent
-              content={"menu"}
-              className="absolute md:relative"
+              content={"Menu"}
+              className="fixed top-4 left-4 z-50"
               position="BottomCenter"
             >
               <button
-                className="text-xl rounded-full p-3 mt-4 block  hover:bg-gray-500"
+                className="bg-white hover:bg-green-50 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 border border-gray-200"
                 onClick={() => {
                   dispatch(showSidebarOrNot(true));
                 }}
               >
-                <IoMenu />
+                <IoMenu className="text-green-600 text-2xl" />
               </button>
             </TooltipComponent>
           )}
 
           <div
-            className={`bg-white  min-h-screen w-full  mt-[10px] max-w-[800px] mx-auto ${
-              activeMenu ? "sm:ml-72 " : " max-w-[900px]"
-            } `}
+            className={`min-h-screen w-full transition-all duration-300 ${
+              activeMenu ? "md:ml-72" : ""
+            }`}
           >
-            <div className={`fixed md:static bg-white  w-full   `}></div>
-
-            <div className="main_section mx-8 lg:min-w-[900px] ">
+            <div className="main_section">
               <Routes>
                 <Route path="/" element={<UserProfileContent />} />
                 <Route path="/profiles" element={<UserProfileContent />} />

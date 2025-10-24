@@ -49,10 +49,20 @@ const userSlice = createSlice({
     },
     editUserProfile: (state, action) => {
       const { username, email, phoneNumber, adress } = action.payload;
-      state.currentUser.username = username;
-      state.currentUser.email = email;
-      state.currentUser.phoneNumber = phoneNumber;
-      state.currentUser.adress = adress;
+      console.log("editUserProfile reducer called with:", action.payload);
+      console.log("Current user before update:", state.currentUser);
+      
+      // Only update if currentUser exists
+      if (state.currentUser) {
+        if (username !== undefined) state.currentUser.username = username;
+        if (email !== undefined) state.currentUser.email = email;
+        if (phoneNumber !== undefined) state.currentUser.phoneNumber = phoneNumber;
+        if (adress !== undefined) state.currentUser.adress = adress;
+        
+        console.log("Current user after update:", state.currentUser);
+      } else {
+        console.error("Cannot update profile: currentUser is null!");
+      }
     },
     setUpdated: (state, action) => {
       state.isUpdated = action.payload;

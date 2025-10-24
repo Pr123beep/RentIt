@@ -5,6 +5,7 @@ import { MdCurrencyRupee } from "react-icons/md";
 import { IoMdTime } from "react-icons/io";
 import { CiCalendarDate } from "react-icons/ci";
 import { CiLocationOn } from "react-icons/ci";
+import { FiShoppingBag } from "react-icons/fi";
 import UserOrderDetailsModal from "../../components/UserOrderDetailsModal";
 import {
   setIsOrderModalOpen,
@@ -49,134 +50,185 @@ export default function Orders() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50 py-8 px-4 sm:px-6 lg:px-8">
       <UserOrderDetailsModal />
-      <h1 className="text-4xl font-semibold mb-2">Your Bookings</h1>
-      <div className="text-sm text-gray-600 mb-8">
-        {bookings && bookings.length > 0 ? "Check out all of your Bookings" :  <div className="font-extrabold text-black flex justify-center items-center min-h-[500px]">No Bookings Yet</div>}
+      
+      <div className="max-w-6xl mx-auto">
+        {/* Header Section */}
+        <div className="mb-8">
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-3 flex items-center gap-3">
+            <div className="bg-gradient-to-br from-green-500 to-green-600 p-3 rounded-xl shadow-lg">
+              <FiShoppingBag className="text-white text-3xl" />
       </div>
-      <div className="mb-8">
+            Your Bookings
+          </h1>
+          <p className="text-gray-600 text-lg">
         {bookings && bookings.length > 0
-          && bookings.map((cur, idx) => {
+              ? `Manage and track all your ${bookings.length} booking${bookings.length > 1 ? 's' : ''}` 
+              : ''}
+          </p>
+        </div>
+
+        {/* Bookings List or Empty State */}
+        {bookings && bookings.length > 0 ? (
+          <div className="space-y-6">
+            {bookings.map((cur, idx) => {
               const pickupDate = new Date(cur.bookingDetails.pickupDate);
               const dropoffDate = new Date(cur.bookingDetails.dropOffDate);
 
               return (
                 <div
-                  className="box-shadow-md drop-shadow-md border border-1px rounded-lg p-4 md:px-10 md:py-5 mb-4"
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 transform hover:-translate-y-1"
                   key={idx}
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-6 ">
-                    <div className="mb-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+                    {/* Vehicle Image */}
+                    <div className="lg:col-span-1">
+                      <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 h-64 lg:h-full">
                     <img
                       alt={cur.vehicleDetails.name}
-                      className="w-full h-auto bg-gray-100  "
-                      height="200"
+                          className="w-full h-full object-contain p-4 hover:scale-110 transition-transform duration-300"
                       src={cur.vehicleDetails.image[0]}
-                      style={{
-                        aspectRatio: "200/200",
-                        objectFit: "contain",
-                      }}
-                      width="200"
                     />
+                        <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                          Booking #{idx + 1}
+                        </div>
+                      </div>
                     </div>
                     
-                    <div className="col-span-2">
-                      <h3 className="text-lg font-semibold mb-1">{cur._id}</h3>
-                      <p className="text-gray-600 mb-2">
-                        <span className="font-bold">Id</span> :{" "}
-                        {cur.bookingDetails._id}
-                      </p>
-                      <p className="text-lg font-semibold mb-4 flex  items-center">
-                        <span>
-                          <MdCurrencyRupee />
-                        </span>
+                    {/* Booking Details */}
+                    <div className="lg:col-span-2 space-y-4">
+                      {/* Vehicle Name & Price */}
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 pb-4 border-b border-gray-200">
+                        <div>
+                          <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                            {cur.vehicleDetails.name || cur.vehicleDetails.model}
+                          </h3>
+                          <p className="text-sm text-gray-500 font-mono">
+                            ID: {cur.bookingDetails._id.slice(0, 12)}...
+                          </p>
+                        </div>
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 px-4 py-3 rounded-xl border-2 border-green-200">
+                          <p className="text-sm text-gray-600 font-medium mb-1">Total Amount</p>
+                          <p className="text-2xl font-bold text-green-600 flex items-center">
+                            <MdCurrencyRupee className="text-3xl" />
                         {cur.bookingDetails.totalPrice}
                       </p>
-                      <div className="flex justify-between">
-                        <div className="">
-                          <div className="mt-2 font-medium underline underline-offset-4 mb-5">
-                            Pick up
-                          </div>
-                          <div className="mt-2 capitalize">
-                            <p className="text-black text-sm mt-2 leading-6 flex items-center gap-2">
-                              <span>
-                                <CiLocationOn />
-                              </span>
-                              {cur.bookingDetails.pickUpLocation}
-                            </p>
+                        </div>
+                      </div>
 
-                            <div className="text-[14px] flex flex-col justify-start items-start  pr-2 gap-2 mt-2">
-                              <div className="flex justify-between gap-2 items-center">
-                                <span>
-                                  <CiCalendarDate style={{ fontSize: 15 }} />
-                                </span>
-                                {
-                                  <>
-                                    <span> {pickupDate.getDate()}: </span>
-                                    <span>{pickupDate.getMonth()} : </span>
-                                    <span>{pickupDate.getFullYear()} </span>
-                                  </>
-                                }
+                      {/* Pickup & Dropoff Info */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Pickup */}
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-xl border border-blue-200">
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="bg-blue-500 p-2 rounded-lg">
+                              <CiLocationOn className="text-white text-xl" />
+                            </div>
+                            <h4 className="font-bold text-blue-900 text-lg">Pick Up</h4>
+                          </div>
+                          <p className="text-gray-800 font-semibold mb-3 capitalize">
+                            {cur.bookingDetails.pickUpLocation}
+                          </p>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-gray-700 bg-white/60 rounded-lg px-3 py-2">
+                              <CiCalendarDate className="text-blue-600 text-lg" />
+                              <span className="text-sm font-medium">
+                                {pickupDate.toLocaleDateString('en-US', { 
+                                  day: '2-digit', 
+                                  month: 'short', 
+                                  year: 'numeric' 
+                                })}
+                              </span>
                               </div>
-                              <div className="flex justify-center items-center gap-2">
-                                <span>
-                                  <IoMdTime style={{ fontSize: 16 }} />
+                            <div className="flex items-center gap-2 text-gray-700 bg-white/60 rounded-lg px-3 py-2">
+                              <IoMdTime className="text-blue-600 text-lg" />
+                              <span className="text-sm font-medium">
+                                {pickupDate.toLocaleTimeString('en-US', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
                                 </span>
-                                <span></span>
-                                {pickupDate.getHours()}:
-                                <span>{pickupDate.getMinutes()}</span>
-                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className="">
-                          <div className="mt-2 font-medium underline underline-offset-4 mb-5">
-                            Drop off
+
+                        {/* Dropoff */}
+                        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-5 rounded-xl border border-emerald-200">
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="bg-emerald-500 p-2 rounded-lg">
+                              <CiLocationOn className="text-white text-xl" />
+                            </div>
+                            <h4 className="font-bold text-emerald-900 text-lg">Drop Off</h4>
                           </div>
-
-                          <div className="mt-2">
-                            <p className="text-black text-sm leading-6 mt-2 capitalize flex items-center gap-2">
-                              <span>
-                                <CiLocationOn />
+                          <p className="text-gray-800 font-semibold mb-3 capitalize">
+                            {cur.bookingDetails.dropOffLocation}
+                          </p>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-gray-700 bg-white/60 rounded-lg px-3 py-2">
+                              <CiCalendarDate className="text-emerald-600 text-lg" />
+                              <span className="text-sm font-medium">
+                                {dropoffDate.toLocaleDateString('en-US', { 
+                                  day: '2-digit', 
+                                  month: 'short', 
+                                  year: 'numeric' 
+                                })}
                               </span>
-                              {cur.bookingDetails.dropOffLocation}
-                            </p>
-
-                            <div className="text-[14px] flex flex-col justify-start items-start pr-2 gap-2 mt-2">
-                              <div className="flex  justify-between gap-2 items-center">
-                                <span>
-                                  <CiCalendarDate style={{ fontSize: 15 }} />
-                                </span>
-                                <span>{dropoffDate.getDate()} : </span>
-                                <span>{dropoffDate.getMonth()} : </span>
-                                <span>{dropoffDate.getFullYear()} </span>
                               </div>
-                              <div className="flex justify-center items-center gap-2">
-                                <span>
-                                  <IoMdTime style={{ fontSize: 16 }} />
+                            <div className="flex items-center gap-2 text-gray-700 bg-white/60 rounded-lg px-3 py-2">
+                              <IoMdTime className="text-emerald-600 text-lg" />
+                              <span className="text-sm font-medium">
+                                {dropoffDate.toLocaleTimeString('en-US', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
                                 </span>
-                                <span>{dropoffDate.getHours()} </span>:
-                                <span>{dropoffDate.getMinutes()} </span>
-                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex mt-4">
+
+                      {/* Action Button */}
+                      <div className="pt-4">
                         <button
-                          className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 "
+                          className="w-full sm:w-auto bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white font-semibold rounded-xl px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
                           onClick={() => handleDetailsModal(cur)}
                         >
-                          Details
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          View Full Details
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
               );
-            })
-          }
+            })}
+          </div>
+        ) : (
+          /* Empty State */
+          <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                <FiShoppingBag className="text-gray-400 text-5xl" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">No Bookings Yet</h3>
+              <p className="text-gray-600 mb-8">
+                Start your journey by booking your first ride. Explore our wide range of vehicles!
+              </p>
+              <a
+                href="/vehicles"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Browse Vehicles
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

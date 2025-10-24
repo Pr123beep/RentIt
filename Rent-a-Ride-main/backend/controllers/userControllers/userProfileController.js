@@ -14,6 +14,7 @@ export const editUserProfile = async (req, res, next) => {
         $set: {
           username: updatedProfileData.username,
           email: updatedProfileData.email,
+          phoneNumber: updatedProfileData.phoneNumber,
           adress: updatedProfileData.adress,
         },
       },
