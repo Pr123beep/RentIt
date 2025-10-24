@@ -45,7 +45,7 @@ export const verifyToken = async (req, res, next) => {
         { refreshToken: newRefreshToken }
       );
 
-      req.user = decoded.id; //setting req.user so that next middleware in this cycle can acess it
+      req.user = { id: decoded.id }; //setting req.user so that next middleware in this cycle can acess it
       next();
     } catch (error) {
       console.log(error);
@@ -54,7 +54,7 @@ export const verifyToken = async (req, res, next) => {
   } else {
     try {
       const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN);
-      req.user = decoded.id; //setting req.user so that next middleware in this cycle can acess it
+      req.user = { id: decoded.id }; //setting req.user so that next middleware in this cycle can acess it
       next();
     } catch (error) {
       if (error.name === "TokenExpiredError") {

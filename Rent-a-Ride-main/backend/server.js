@@ -54,6 +54,17 @@ App.use('*', cloudinaryConfig);
 // App.get('/*', (req, res) => res.sendFile(resolve(__dirname, '../public/index.html')));
 
 
+// Add request logging middleware
+App.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
+// Test route
+App.get("/api/test", (req, res) => {
+  res.json({ message: "Backend is working!", timestamp: new Date().toISOString() });
+});
+
 App.use("/api/user", userRoute);
 App.use("/api/auth", authRoute);
 App.use("/api/admin",adminRoute);

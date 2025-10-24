@@ -84,17 +84,18 @@ export const vendorGoogle = async (req, res, next) => {
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8); //we are generating a random password since there is no password in result
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      // Create a more user-friendly username for vendors
+      const baseName = req.body.name.split(" ").join("").toLowerCase();
+      const randomSuffix = Math.random().toString(36).slice(-4); // Shorter random suffix
+      const username = `${baseName}${randomSuffix}`;
+      
       const newUser = new User({
         profilePicture: req.body.photo,
         password: hashedPassword,
-        username:
-          req.body.name.split(" ").join("").toLowerCase() +
-          Math.random().toString(36).slice(-8) +
-          Math.random().toString(36).slice(-8),
+        username: username,
         email: req.body.email,
-        isVendor:true,
-        //we cannot set username to req.body.name because other user may also have same name so we generate a random value and concat it to name
-        //36 in toString(36) means random value from 0-9 and a-z
+        isVendor: true,
+        // Create a user-friendly username with a short random suffix to avoid duplicates
       });
       try{
         const savedUser=  await newUser.save();

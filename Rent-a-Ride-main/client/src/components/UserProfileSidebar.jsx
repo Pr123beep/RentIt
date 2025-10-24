@@ -46,19 +46,72 @@ const UserProfileSidebar = () => {
   };
 
   const handleDelete = async () => {
+    // Add confirmation dialog
+    const confirmed = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone and will delete all your bookings and data."
+    );
+    
+    if (!confirmed) {
+      return;
+    }
+
     try {
       dispatch(deleteUserStart());
+      
+      // Get authentication tokens
+      const refreshToken = localStorage.getItem('refreshToken');
+      const accessToken = localStorage.getItem('accessToken');
+      
+      console.log("🗑️ Attempting to delete account:", {
+        userId: currentUser._id,
+        hasRefreshToken: !!refreshToken,
+        hasAccessToken: !!accessToken
+      });
+      
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${refreshToken},${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        credentials: 'include',
+        signal: AbortSignal.timeout(10000) // 10 second timeout
       });
+      
+      console.log("📥 Delete response status:", res.status);
+      
       const data = await res.json();
-      if (data.succes === false) {
-        dispatch(deleteUserFailure(data));
+      console.log("📥 Delete response data:", data);
+      
+      if (!res.ok) {
+        console.error("Delete account failed:", data);
+        dispatch(deleteUserFailure(data.message || "Failed to delete account"));
+        alert("Failed to delete account. Please try again.");
         return;
       }
+      
+      // Success - clear local storage and redirect
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       dispatch(deleteUserSuccess(data));
+      alert("Account deleted successfully.");
+      navigate("/signin");
+      
     } catch (error) {
+      console.error("Delete account error:", error);
+      
+      if (error.name === 'TimeoutError') {
+        alert("Request timed out. Please check your internet connection and try again.");
+      } else if (error.name === 'AbortError') {
+        alert("Request was cancelled. Please try again.");
+      } else {
+        alert("An error occurred while deleting your account. Please try again.");
+      }
+      
       dispatch(deleteUserFailure(error));
+    } finally {
+      // Always clear loading state
+      dispatch(deleteUserFailure(null));
     }
   };
 
@@ -134,11 +187,22 @@ const UserProfileSidebar = () => {
                 </button>
 
                 <button
-                  className="flex items-center gap-3 pl-4 pt-3 pb-2.5 rounded-lg text-md text-red-600 hover:bg-red-50 hover:text-red-700 m-2 font-medium transition-all duration-200"
+                  className="flex items-center gap-3 pl-4 pt-3 pb-2.5 rounded-lg text-md text-red-600 hover:bg-red-50 hover:text-red-700 m-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleDelete}
                   type="button"
+                  disabled={isLoading}
                 >
-                  {isLoading ? "Loading..." : "Delete Account"}
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-lg">🗑️</span>
+                      <span>Delete Account</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>

@@ -165,6 +165,22 @@ export const google = async (req, res, next) => {
       return next(errorHandler(409, "email already in use as a vendor"));
     }
     if (user) {
+      // Clean up username if it's too long (old Google OAuth format)
+      if (user.username && user.username.length > 20) {
+        const baseName = user.username.replace(/[0-9a-z]{8,}$/, ''); // Remove long random suffix
+        const randomSuffix = Math.random().toString(36).slice(-4);
+        const newUsername = `${baseName}${randomSuffix}`;
+        
+        // Update username in database
+        await User.findByIdAndUpdate(user._id, { username: newUsername });
+        user.username = newUsername;
+        
+        console.log("🧹 Cleaned up username on login:", {
+          old: user.username,
+          new: newUsername
+        });
+      }
+      
       const { password: hashedPassword, ...rest } = user;
       const token = Jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN);
 
@@ -182,17 +198,24 @@ export const google = async (req, res, next) => {
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8); //we are generating a random password since there is no password in result
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      // Create a more user-friendly username
+      const baseName = req.body.name.split(" ").join("").toLowerCase();
+      const randomSuffix = Math.random().toString(36).slice(-4); // Shorter random suffix
+      const username = `${baseName}${randomSuffix}`;
+      
+      console.log("🔐 Google OAuth - Creating user:", {
+        originalName: req.body.name,
+        generatedUsername: username,
+        email: req.body.email
+      });
+      
       const newUser = new User({
         profilePicture: req.body.photo,
         password: hashedPassword,
-        username:
-          req.body.name.split(" ").join("").toLowerCase() +
-          Math.random().toString(36).slice(-8) +
-          Math.random().toString(36).slice(-8),
+        username: username,
         email: req.body.email,
         isUser: true,
-        //we cannot set username to req.body.name because other user may also have same name so we generate a random value and concat it to name
-        //36 in toString(36) means random value from 0-9 and a-z
+        // Create a user-friendly username with a short random suffix to avoid duplicates
       });
       const savedUser = await newUser.save();
       const userObject = savedUser.toObject();
