@@ -712,5 +712,26 @@ body {
       background-position: 0% 50%;
     }
   }
+
+  /* Preloader specific styles */
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  /* Smooth page transitions */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Prevent flash of unstyled content */
+  body {
+    overflow-x: hidden;
+  }
   
 
