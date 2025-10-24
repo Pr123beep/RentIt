@@ -136,7 +136,14 @@ const CheckoutPage = () => {
   };
 
   //calculateing total price after coupon
+  console.log("🔍 PRICING DEBUG:");
+  console.log("  - Vehicle price from DB:", price);
+  console.log("  - Days calculated:", Days);
+  console.log("  - Discount:", discount);
+  console.log("  - Single vehicle detail:", singleVehicleDetail);
+  
   let totalPrice = (price * Days) + 50 - discount;
+  console.log("  - Total price calculated:", totalPrice);
   
   //handle place order data
   const handlePlaceOrder = async () => {

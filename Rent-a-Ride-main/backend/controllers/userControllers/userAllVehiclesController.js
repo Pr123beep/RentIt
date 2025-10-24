@@ -23,7 +23,13 @@ export const showVehicleDetails = async (req, res, next) => {
       next(errorHandler(409, "body cannot be empty"));
     }
     const { id } = req.body;
+    console.log("🔍 VEHICLE DETAILS API DEBUG:");
+    console.log("  - Requested vehicle ID:", id);
+    
     const vehicleDetail = await vehicle.findById(id);
+    console.log("  - Found vehicle:", vehicleDetail?.name, vehicleDetail?.model);
+    console.log("  - Vehicle price:", vehicleDetail?.price);
+    console.log("  - Full vehicle data:", vehicleDetail);
 
     if (!vehicleDetail) {
       return next(errorHandler(404, "no vehicles found"));

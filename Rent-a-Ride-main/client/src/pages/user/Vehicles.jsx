@@ -25,12 +25,17 @@ export const onVehicleDetail = async (id, dispatch, navigate) => {
       body: JSON.stringify({ id }),
     });
     const data = await res.json();
+    console.log("🔍 VEHICLE DETAILS FRONTEND DEBUG:");
+    console.log("  - API Response:", data);
+    console.log("  - Vehicle price from API:", data?.price);
+    console.log("  - Vehicle name:", data?.name);
 
     if(data.statusCode == 401 || data.statusCode == 403){
       dispatch(signOut())
     }
    
       dispatch(setVehicleDetail(data));
+      console.log("  - Vehicle detail stored in Redux");
       navigate("/vehicleDetails");
     
   
