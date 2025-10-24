@@ -84,8 +84,8 @@ const Vehicles = () => {
 
   return (
     <>
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50 py-8">
-      <div className="lg:grid lg:grid-cols-12 gap-x-8 max-w-[1600px] mx-auto px-4 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50 py-6">
+      <div className="lg:grid lg:grid-cols-12 gap-x-6 max-w-[1800px] mx-auto px-4 lg:px-6">
         {/* Filter Sidebar */}
         <div className="mt-2 col-span-3 lg:relative">
         <Filter />
@@ -94,24 +94,27 @@ const Vehicles = () => {
         {/* Main Content */}
       <div className="col-span-9">
           {/* Sort Component */}
-          <div className="mt-2 sticky top-20 z-40 mb-8">
+          <div className="mt-2 sticky top-2 z-40 mb-6">
           <Sort />
         </div>
        
           {/* Vehicles Count */}
           {!isLoading && vehiclesToDisplay.length > 0 && (
-            <div className="mb-6">
-              <p className="text-lg font-semibold text-gray-700">
-                Showing <span className="text-green-600">{vehiclesToDisplay.filter(v => v.isDeleted === "false" && v.isAdminApproved).length}</span> vehicles
-                            </p>
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-base font-semibold text-gray-700">
+                <span className="text-green-600 text-2xl">{vehiclesToDisplay.filter(v => v.isDeleted === "false" && v.isAdminApproved).length}</span> vehicles available
+              </p>
+              <div className="text-sm text-gray-500">
+                Showing the best options for you
                           </div>
+                        </div>
           )}
 
           {/* Loading State */}
           {isLoading ? (
             <SkeletonLoader />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 pb-10">
               {vehiclesToDisplay.map((vehicle, idx) =>
                 vehicle.isDeleted === "false" && vehicle.isAdminApproved ? (
                   <VehicleCard

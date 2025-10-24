@@ -5,18 +5,25 @@ const Preloader = () => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Smooth loading progress
+    // Smooth loading progress that syncs with AppWrapper timing
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           return 100;
         }
-        // Faster at the start, slower at the end for smooth experience
-        const increment = prev < 60 ? Math.random() * 20 : Math.random() * 8;
+        // Progressive speed: fast -> medium -> slow for smooth UX
+        let increment;
+        if (prev < 30) {
+          increment = Math.random() * 15 + 10; // Fast start (10-25%)
+        } else if (prev < 70) {
+          increment = Math.random() * 10 + 5; // Medium (5-15%)
+        } else {
+          increment = Math.random() * 5 + 2; // Slow finish (2-7%)
+        }
         return Math.min(prev + increment, 100);
       });
-    }, 180);
+    }, 200);
 
     return () => clearInterval(interval);
   }, []);
