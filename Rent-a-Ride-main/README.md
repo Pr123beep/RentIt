@@ -108,7 +108,7 @@ Every vehicle in our fleet isn't just a car - it's a **time machine** that takes
 
 #### 1. **Clone the Repository (Get the Code)**
 ```bash
-git clone https://github.com/your-username/rent-a-ride.git
+git clone https://github.com/Pr123beep/rent-a-ride.git
 cd rent-a-ride
 ```
 
@@ -312,10 +312,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 **CONTACT (Let's Talk)** 📞
 
-- **Email**: [your-email@example.com](mailto:your-email@example.com)
-- **GitHub**: [@your-username](https://github.com/your-username)
-- **LinkedIn**: [Your LinkedIn](https://linkedin.com/in/your-profile)
-- **Twitter**: [@your-twitter](https://twitter.com/your-twitter)
+- **Email**: [itsprathamj5@gmai.com](mailto:itsprathamj5@gmail.com)
+- **GitHub**: [@Pr123beep](https://github.com/Pr123beep)
+- **LinkedIn**: [Pratham Jain](https://linkedin.com/in/prathampy)
+
 
 ---
 
