@@ -9,7 +9,7 @@ import nodemailer from "nodemailer";
 export const BookCar = async (req, res, next) => {
   try {
     if (!req.body) {
-      next(errorHandler(401, "bad request on body"));
+      return next(errorHandler(401, "bad request on body"));
     }
 
     const {
@@ -25,32 +25,55 @@ export const BookCar = async (req, res, next) => {
       razorpayOrderId,
     } = req.body;
 
+    console.log("📝 Booking request received:");
+    console.log("  - user_id:", user_id);
+    console.log("  - vehicle_id:", vehicle_id);
+    console.log("  - totalPrice:", totalPrice);
+    console.log("  - pickupDate:", pickupDate);
+    console.log("  - dropoffDate:", dropoffDate);
+    console.log("  - pickup_location:", pickup_location);
+    console.log("  - dropoff_location:", dropoff_location);
+    console.log("  - pickup_district:", pickup_district);
+    console.log("  - razorpayPaymentId:", razorpayPaymentId);
+    console.log("  - razorpayOrderId:", razorpayOrderId);
+
+    // Validate required fields
+    if (!user_id || !vehicle_id || !totalPrice || !pickupDate || !dropoffDate || !pickup_location || !dropoff_location) {
+      console.error("❌ Missing required fields!");
+      console.log("Request body:", req.body);
+      return next(errorHandler(400, "Missing required booking fields"));
+    }
+
     const book = new Booking({
-      pickupDate,
-      dropOffDate: dropoffDate,
+      pickupDate: new Date(pickupDate),
+      dropOffDate: new Date(dropoffDate),
       userId: user_id,
       pickUpLocation: pickup_location,
       vehicleId: vehicle_id,
       dropOffLocation: dropoff_location,
-      pickUpDistrict: pickup_district,
-      totalPrice,
-      razorpayPaymentId,
-      razorpayOrderId,
+      pickUpDistrict: pickup_district || "",
+      totalPrice: Number(totalPrice),
+      razorpayPaymentId: razorpayPaymentId || "PAYMENT_DISABLED",
+      razorpayOrderId: razorpayOrderId || "NO_PAYMENT_REQUIRED",
       status: "booked",
     });
+    
     if (!book) {
-      console.log("not booked");
-      return;
+      console.log("❌ Booking creation failed");
+      return next(errorHandler(500, "Failed to create booking"));
     }
 
     const booked = await book.save();
+    console.log("✅ Booking saved successfully:", booked._id);
+    
     res.status(200).json({
+      ok: true,
       message: "car booked successfully",
       booked,
     });
   } catch (error) {
-    console.log(error);
-    next(errorHandler(500, "error while booking car"));
+    console.error("❌ Error while booking car:", error);
+    next(errorHandler(500, "error while booking car: " + error.message));
   }
 };
 

@@ -22,6 +22,8 @@ export function loadScript(src) {
 //function to fetch latest bookings from db and update it to redux
 export const fetchLatestBooking = async (user_id, dispatch) => {
   try {
+    console.log("📋 Fetching latest booking for user:", user_id);
+    
     const response = await fetch("/api/user/latestbookings", {
       method: "POST",
       headers: {
@@ -30,16 +32,22 @@ export const fetchLatestBooking = async (user_id, dispatch) => {
       body: JSON.stringify({ user_id }),
     });
 
+    console.log("📋 Latest booking response status:", response.status);
+
     if (!response.ok) {
       throw new Error("Failed to fetch latest booking");
     }
 
     const data = await response.json();
+    console.log("📋 Latest booking data:", data);
+    
     dispatch(setLatestBooking(data));
     dispatch(setisPaymentDone(true));
+    
+    console.log("✅ Latest booking saved to Redux");
     return data;
   } catch (error) {
-    console.error("Error fetching latest booking:", error);
+    console.error("❌ Error fetching latest booking:", error);
     return null;
   }
 };

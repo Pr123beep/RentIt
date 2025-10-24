@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   dropOffDate: { type: Date, required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Optional, if needed
   pickUpLocation: { type: String, required: true },
+  pickUpDistrict: { type: String, required: false }, // Added district field
   dropOffLocation: { type: String, required: true },
   totalPrice: { type: Number, required: true },
   razorpayOrderId: { type: String, required: true },

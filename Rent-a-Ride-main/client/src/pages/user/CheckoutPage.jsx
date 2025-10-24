@@ -11,11 +11,10 @@ import { FaIndianRupeeSign } from "react-icons/fa6";
 import TextField from "@mui/material/TextField";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { displayRazorpay } from "./Razorpay";
-import { setPageLoading } from "../../redux/user/userSlice";
+import { displayRazorpay, fetchLatestBooking } from "./Razorpay"; // Added fetchLatestBooking import
+import { setPageLoading, setIsSweetAlert } from "../../redux/user/userSlice";
 import { setisPaymentDone } from "../../redux/user/LatestBookingsSlice";
 import {toast, Toaster} from "sonner";
-// import { toast, Toaster } from "sonner";
 
 export async function sendBookingDetailsEmail(
   toEmail,
@@ -91,6 +90,20 @@ const CheckoutPage = () => {
   const { isPageLoading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
+  // Validate that user has selected booking details
+  useEffect(() => {
+    if (!pickupDate?.humanReadable || !dropoffDate?.humanReadable || !pickup_location || !dropoff_location) {
+      console.error("❌ Missing booking details. Redirecting to vehicle selection...");
+      toast.error("Please select pickup/dropoff dates and locations first!");
+      navigate("/vehicles");
+    }
+    if (!singleVehicleDetail?._id) {
+      console.error("❌ No vehicle selected. Redirecting...");
+      toast.error("Please select a vehicle first!");
+      navigate("/vehicles");
+    }
+  }, [pickupDate, dropoffDate, pickup_location, dropoff_location, singleVehicleDetail, navigate]);
+
   const { email, phoneNumber, adress } = currentUser;
   const { price } = singleVehicleDetail;
 
@@ -123,22 +136,44 @@ const CheckoutPage = () => {
   };
 
   //calculateing total price after coupon
-  let totalPrice = price * Days ? Days + 50 - discount : "";
+  let totalPrice = (price * Days) + 50 - discount;
+  
   //handle place order data
   const handlePlaceOrder = async () => {
+    // Validate all required fields before sending
+    if (!user_id || !vehicle_id || !pickupDate?.humanReadable || !dropoffDate?.humanReadable || !pickup_location || !dropoff_location) {
+      toast.error("Missing required booking information. Please fill all fields.");
+      console.error("❌ Missing booking data:", {
+        user_id,
+        vehicle_id,
+        pickupDate: pickupDate?.humanReadable,
+        dropoffDate: dropoffDate?.humanReadable,
+        pickup_location,
+        dropoff_location,
+      });
+      return;
+    }
+
     const orderData = {
       user_id,
       vehicle_id,
       totalPrice,
       pickupDate: pickupDate.humanReadable,
       dropoffDate: dropoffDate.humanReadable,
-      pickup_district,
+      pickup_district: pickup_district || "",
       pickup_location,
       dropoff_location,
     };
 
+    console.log("📦 Order data prepared:", orderData);
+
     try {
       dispatch(setPageLoading(true));
+      
+      // 🚀 PAYMENT DISABLED - Book directly without Razorpay
+      // To enable payment: Uncomment the displayRazorpay code below and comment out the direct booking
+      
+      /* RAZORPAY PAYMENT FLOW (DISABLED FOR NOW)
       const displayRazorpayResponse = await displayRazorpay(
         orderData,
         navigate,
@@ -149,11 +184,61 @@ const CheckoutPage = () => {
         dispatch(setPageLoading(false));
         toast.error(displayRazorpayResponse?.message);
       }
+      */
+
+      // DIRECT BOOKING WITHOUT PAYMENT (ENABLED)
+      const dbData = {
+        ...orderData,
+        // Mock payment data for backend compatibility
+        razorpayPaymentId: "PAYMENT_DISABLED",
+        razorpayOrderId: "NO_PAYMENT_REQUIRED",
+        razorpaySignature: "PAYMENT_DISABLED",
+      };
+
+      console.log("📤 Sending booking data:", dbData);
+
+      const result = await fetch("/api/user/bookCar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dbData),
+      });
+
+      console.log("📥 Response status:", result.status);
+      
+      const successStatus = await result.json();
+      console.log("📥 Response data:", successStatus);
+      
+      if (result.ok && successStatus.ok) {
+        console.log("✅ Booking successful!");
+        
+        dispatch(setIsSweetAlert(true));
+        
+        // Fetch latest bookings after successful booking
+        console.log("📋 Fetching latest bookings...");
+        await fetchLatestBooking(orderData.user_id, dispatch);
+        
+        toast.success("Booking confirmed! No payment required.");
+        
+        // Navigate after a short delay to ensure state updates
+        setTimeout(() => {
+          navigate("/");
+        }, 500);
+        
+        dispatch(setPageLoading(false));
+      } else {
+        console.error("❌ Booking failed:", successStatus);
+        toast.error(successStatus.message || "Booking failed. Please try again.");
+        dispatch(setPageLoading(false));
+      }
+
     } catch (error) {
       console.log(error);
+      toast.error("An error occurred. Please try again.");
       dispatch(setPageLoading(false));
-    }finally{
-      dispatch(setPageLoading(false))
+    } finally {
+      dispatch(setPageLoading(false));
     }
   };
 
@@ -356,10 +441,26 @@ const CheckoutPage = () => {
 
         {/* details */}
         <div className="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0 drop-shadow-md ">
-          <p className="text-xl font-medium">Payment Details</p>
+          <p className="text-xl font-medium">Booking Details</p>
           <p className="text-gray-400">
-            Complete your order by providing your payment details.
+            Complete your booking by providing your details.
           </p>
+          
+          {/* Payment Disabled Notice */}
+          <div className="mt-4 mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-green-800">
+                  <strong>Free Booking!</strong> Payment is temporarily disabled. Book now without any payment.
+                </p>
+              </div>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit(handlePlaceOrder)}>
             <div className="flex flex-col gap-y-8 my-4">
@@ -484,9 +585,9 @@ const CheckoutPage = () => {
               </button>
             ) : (
               <button
-                className={`mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white`}
+                className={`mt-4 mb-8 w-full rounded-md bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 py-3 font-medium text-white shadow-lg hover:shadow-xl transition-all duration-200`}
               >
-                {"Place Order"}
+                Confirm Booking (No Payment Required)
               </button>
             )}
           </form>
