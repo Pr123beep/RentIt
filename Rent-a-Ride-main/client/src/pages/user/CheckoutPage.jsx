@@ -113,12 +113,24 @@ const CheckoutPage = () => {
   const start = pickupDate?.humanReadable
     ? new Date(pickupDate?.humanReadable)
     : new Date();
-  const end = pickupDate?.humanReadable
+  const end = dropoffDate?.humanReadable
     ? new Date(dropoffDate?.humanReadable)
     : new Date();
 
   const diffMilliseconds = end - start;
   const Days = Math.round(diffMilliseconds / (1000 * 3600 * 24));
+  
+  console.log("📅 DATE CALCULATION DEBUG:");
+  console.log("  - Pickup date:", pickupDate?.humanReadable);
+  console.log("  - Dropoff date:", dropoffDate?.humanReadable);
+  console.log("  - Start date object:", start);
+  console.log("  - End date object:", end);
+  console.log("  - Difference in milliseconds:", diffMilliseconds);
+  console.log("  - Days calculated:", Days);
+  
+  // Minimum 1 day booking validation
+  const minimumDays = Math.max(Days, 1);
+  console.log("  - Minimum days (at least 1):", minimumDays);
 
   //settting and checking coupon
   const [wrongCoupon, setWrongCoupon] = useState(false);
@@ -142,8 +154,18 @@ const CheckoutPage = () => {
   console.log("  - Discount:", discount);
   console.log("  - Single vehicle detail:", singleVehicleDetail);
   
-  let totalPrice = (price * Days) + 50 - discount;
+  // Safety check for price
+  const safePrice = price || 0;
+  console.log("  - Safe price (fallback to 0 if undefined):", safePrice);
+  
+  let totalPrice = (safePrice * minimumDays) + 50 - discount;
   console.log("  - Total price calculated:", totalPrice);
+  
+  // If price is 0 or undefined, show error
+  if (!price || price === 0) {
+    console.error("❌ CRITICAL: Vehicle price is missing or 0!");
+    console.error("  - This will cause incorrect pricing!");
+  }
   
   //handle place order data
   const handlePlaceOrder = async () => {
@@ -562,7 +584,7 @@ const CheckoutPage = () => {
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium text-gray-900">Days</p>
-                <p className="font-semibold text-gray-900">{Days}</p>
+                <p className="font-semibold text-gray-900">{minimumDays}</p>
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium text-gray-900">Shipping</p>
