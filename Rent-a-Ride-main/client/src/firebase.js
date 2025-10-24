@@ -6,12 +6,12 @@ import { getAuth } from "@firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "rent-a-ride-5af16.firebaseapp.com",
-  projectId: "rent-a-ride-5af16",
-  storageBucket: "rent-a-ride-5af16.appspot.com",
-  messagingSenderId: "1068277218849",
-  appId: "1:1068277218849:web:8966754aa388cea132ed60"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AlzaSyBgmKeRRJBSTL1T06Y_KjmAGqxpycj3MqM",
+  authDomain: "rent-a-ride-72fc3.firebaseapp.com",
+  projectId: "rent-a-ride-72fc3",
+  storageBucket: "rent-a-ride-72fc3.appspot.com",
+  messagingSenderId: "1083679696849",
+  appId: "1:1083679696849:web:your_app_id_here" // You'll need to get this from Firebase Console
 };
 
 // Initialize Firebase
